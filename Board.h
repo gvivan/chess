@@ -1,7 +1,9 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-enum moveType {undef=0, regular, capture, castling, pawnD, pawnU, pawnP, kingDanger};
+enum moveType {undef=0, regular, capture, pawnDouble, castling, enPassant, promotion};
+
+enum attackType {noAttack=0, attack, kingAttack};
 
 
 class Move {
@@ -15,6 +17,9 @@ public:
 class Board {
 private:
     friend class Piece;
+
+
+    
     
     bool whiteToPlay; // TRUE if white to play, FALSE if black to play
 
@@ -23,8 +28,25 @@ private:
     makes it simpler to check for bounds.
     */
     Piece* board[64];
+    attackType attacks[64];
 
-    bool attacks[64];
+    // The position of the attacking piece if checkCount==1 (set to -1 otherwise)
+    int attackingPiece;
+
+    /*
+    Here, we keep track of which pieces are pinned to clear the pins before updating.
+    */
+    std::vector<Piece*> pins;
+
+    /*
+    We keep track of the moves played in a vector to allow for undos
+    */
+    std::vector<Move> movePlayed;
+
+    /*
+    We save the moves generated for this turn (this is only beneficial for human moves)
+    */
+    std::vector<Move> movesGenerated;
 
     /*
     To keep track of pieces, we have to arrays of length 63 for each side. This takes advantage
@@ -43,10 +65,7 @@ private:
     std::unique_ptr<Piece> BKing;
 
 
-    bool whiteCheck; // TRUE if it's white to play and white king is checked
-    bool whiteMate; // TRUE if it's white to play and white king is checked with no moves
-    bool blackCheck; // ...
-    bool blackMate;
+    int checkCount; // the number of pieces that are checking the king
 
     bool WQcastle; // TRUE if white has castling rights on queenside
     bool WKcastle; // ...
@@ -56,8 +75,12 @@ private:
 public:
     void makeMove(Move move);
     void importFEN(std::string FEN);
-    std::vector<Move> generateWhite();
-    std::vector<Move> generateBlack();
+
+    // this function updates the attacks map as well as the check count and pins
+    void updateAttacks();
+
+
+    std::vector<Move> generateMoves();
 
 
 
