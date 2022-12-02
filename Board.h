@@ -21,7 +21,7 @@ private:
 
     
     
-    bool whiteToPlay; // TRUE if white to play, FALSE if black to play
+    bool whiteTurn; // TRUE if white's turn, FALSE if black's turn
 
     /*
     The computer's representation of the board is an array of 64 pointers. This is better than an 8x8 matrix because it

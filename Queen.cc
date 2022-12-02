@@ -1,4 +1,4 @@
-#include "King.h"
+#include "Queen.h"
 
 using namespace std;
 

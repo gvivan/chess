@@ -1,21 +1,28 @@
-#include "King.h"
+#include "Pawn.h"
 
 using namespace std;
 
-King::King(Board* owner, int pos, char type){
-    if(type == 'K'){
+Pawn::Pawn(Board* owner, int pos, char type){
+    if(type == 'P'){
         isWhite = true;
     }else{
         isWhite = false;
     }
+    value = 1; // this might be changed later depending how we evaluate things
 
     // the king can never be captured or pinned
     isCaptured = false;
     thePin = nullptr;
 }
 
-void King::generateAttacks(){
-    int target;
+void Pawn::generateAttacks(){
+
+        // do nothing if the piece is captured
+        if(isCaptured){
+                return;
+        }
+
+        int target;
     for(int i = 0; i < 8; i++){
         target = getPos() + direction(i);
         if(0 <= target && target > 64){
@@ -24,7 +31,7 @@ void King::generateAttacks(){
     }
 }
 
-void King::getMoves(vector<Move>& moves){
+void Pawn::getMoves(vector<Move>& moves){
 
     Move move;
     move.start = getPos();
@@ -45,19 +52,17 @@ void King::getMoves(vector<Move>& moves){
             moves.push_back(move)
         }
     }
-    
+
     int target;
     Piece* PieceCapture;
-
-    for(int i = 0; i < 8; i++){
+     for(int i = 0; i < 8; i++){
 
         target = getPos() + direction(i);
 
         if(0 <= target && target > 64 && !getAttack(target)){
-            move.end = target;
-            PieceCapture = pieceAt(target);
-
-            if(PieceCapture != nullptr){
+                move.end = target;
+                PieceCapture = pieceAt(target);
+                if(PieceCapture != nullptr){
 
                 if(capture->getTeam() != this->getTeam()){
                     move.captured = PieceCapture;
@@ -75,6 +80,4 @@ void King::getMoves(vector<Move>& moves){
     }
 
 }
-
-
-
+                                                                               83,1          Bot

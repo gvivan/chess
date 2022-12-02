@@ -3,7 +3,7 @@
 
 class Queen : public Piece {
 public:
-    Queen(Board* owner, int pos, char type): Piece{owner, pos, type} {}; // type should be 'K' or 'k'
+    Queen(Board* owner, int pos, char type): Piece{owner, pos, type} {}; // type should be 'Q' or 'q'
     virtual void generateAttacks();
     virtual void getMoves(std::vector<Move>& moves);
 }
