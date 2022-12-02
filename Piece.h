@@ -16,9 +16,9 @@ protected:
 
     int getPos() {return pos;};
     Piece* pieceAt(int location) {return owner->board[location];};
-    // the directions starting from bottom left to top right
+    // the directions, 0-3 are Rook directions, 4-7 are Bishop directions
     static const int direction(int index) {
-        static const int dir[] = {-9, -8, -7, -1, 1, 7, 8, 9};
+        static const int dir[] = {-8, -1, 1, 8, -9, -7, 7, 9};
     };
 
     void addCheckCount() {owner->checkCount++};
