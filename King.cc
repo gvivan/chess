@@ -2,17 +2,7 @@
 
 using namespace std;
 
-King::King(Board* owner, int pos, char type){
-    if(type == 'K'){
-        isWhite = true;
-    }else{
-        isWhite = false;
-    }
 
-    // the king can never be captured or pinned
-    isCaptured = false;
-    thePin = nullptr;
-}
 
 void King::generateAttacks(){
     int target;

@@ -3,7 +3,7 @@
 
 class King : public Piece {
 public:
-    King(Board* owner, int pos, char type): Piece{owner, pos, type} {}; // type should be 'K' or 'k'
+    King(Board* owner, int pos, char type, bool isWhite, int value): Piece{owner, pos, type, isWhite, value} {}; // type should be 'K' or 'k'
     virtual void generateAttacks();
     virtual void getMoves(std::vector<Move>& moves);
 }

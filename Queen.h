@@ -1,9 +1,12 @@
 #ifndef QUEEN_H
 #define QUEEN_H
 
-class Queen : public Piece {
+class Queen : public SlidingPieces {
 public:
-    Queen(Board* owner, int pos, char type): Piece{owner, pos, type} {}; // type should be 'Q' or 'q'
+    /*
+    Note: We set the range as 0-7
+    */
+    Queen(Board* owner, int pos, char type, bool isWhite, int value): SlidingPieces{owner, pos, type, isWhite, value, 0, 7} {};
     virtual void generateAttacks();
     virtual void getMoves(std::vector<Move>& moves);
 }

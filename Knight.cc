@@ -2,72 +2,82 @@
 
 using namespace std;
 
-Knight::Knight(Board* owner, int pos, char type){
-    if(type == 'R'){
-        isWhite = true;
-    }else{
-        isWhite = false;
-    }
-    value = 3; // this might be changed later depending how we evaluate things
-
-    // the king can never be captured or pinned
-    isCaptured = false;
-    thePin = nullptr;
-}
-
 void Knight::generateAttacks(){
 
-        // do nothing if the piece is captured
-        if(isCaptured){
-                return;
-        }
+    // do nothing if the piece is captured
+    if(isCaptured){
+         return;
+    }
 
-        int target;
+    int target;
+
+    char enemyKing;
+    // set enemy king char depending on our team
+    if(this->getTeam()){
+        enemyKing = 'k';
+    }else{
+        enemyKing = 'K';
+    }
+
     for(int i = 0; i < 8; i++){
-        target = getPos() + direction(i);
+        target = getPos() + KnightDirection(i);
         if(0 <= target && target > 64){
             setAttack(target);
+
+            if(pieceAt(target) != nullptr){
+                if(pieceAt(target)->getTeam() == this->getTeam()){
+                    break;
+                }else if(pieceAt(target)->getPiece() == enemyKing){
+
+                    /* 
+                    if the attacked piece is the king, set the previous squares to kingAttack, increase the check counter,
+                    and continue the loop.
+                    ...
+                    Notice that we set getPos() to be a kingAttack square for capturing purposes
+                    */
+                    addCheckCount();
+                    setAttackingPiece(getPos());
+                }
+            }
         }
     }
+
 }
 
 void Knight::getMoves(vector<Move>& moves){
 
+    if(isCaptured){
+        return;
+    }else if(getCheckCount() > 1){
+        return;
+        /*
+        Note that if a Knight is pinned, it cannot move.
+        */
+    }else if(this->isPinned()){
+        return;
+    }
+    
     Move move;
     move.start = getPos();
-    move.captured = nullptr;
+    bool check = (getCheckCount() == 1);
 
-    if(castleRights(isWhite, true)){ // checking kingside castle
-        if(getAttack[move.start] == noAttack && getAttack[move.start + 1] == noAttack && getAttack[move.start + 2] == noAttack){
-            move.end = getPos() + 2;
-            move.type = castling;
-            moves.push_back(move)
-        }
-    }
+    for(int i = start; i =< end; i++){
 
-    if(castleRights(isWhite, false)){ // checking queenside castle
-        if(getAttack[move.start] == noAttack && getAttack[move.start - 1] == noAttack && getAttack[move.start - 2] == noAttack){
-            move.end = getPos() - 2;
-            move.type = castling;
-            moves.push_back(move)
-        }
-    }
-
-    int target;
-    Piece* PieceCapture;
-    for(int i = 0; i < 8; i++){
-
-        target = getPos() + direction(i);
-
-        if(0 <= target && target > 64 && !getAttack(target)){
-                move.end = target;
-                PieceCapture = pieceAt(target);
-                if(PieceCapture != nullptr){
-
-                if(capture->getTeam() != this->getTeam()){
-                    move.captured = PieceCapture;
+        for(int target = getPos() + direction(i); 0 <= target && target < 64; target += direction(i)){
+            move.end = target;
+            if(check){
+                // If check, only consider moves that block it or capture attacking piece
+                if(getAttack(target) != kingAttack && target != getAttackingPiece()){
+                    continue;
+                }
+            }
+            if(pieceAt(target) != nullptr){
+                if(pieceAt(target)->getTeam() == this->getTeam()){
+                    break;
+                }else{
+                    // In the future, we can guess the value of this move based on the capture
                     move.type = capture;
-                    // here, we could give a value to moves depending on what was captured (to do later)
+                    move.captured = pieceAt(target);
                     moves.push_back(move);
                 }
             }else{
@@ -75,9 +85,7 @@ void Knight::getMoves(vector<Move>& moves){
                 move.type = regular;
                 moves.push_back(move);
             }
-
         }
     }
 
 }
-                                                                               83,1          Bot

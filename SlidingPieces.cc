@@ -1,21 +1,7 @@
-#include "Queen.h"
+#include "SlidingPieces.h"
 
-using namespace std;
 
-Queen::Queen(Board* owner, int pos, char type){
-    if(type == 'Q'){
-        isWhite = true;
-    }else{
-        isWhite = false;
-    }
-    value = 9; // this might be changed later depending how we evaluate things
-
-    // the king can never be captured or pinned
-    isCaptured = false;
-    thePin = nullptr;
-}
-
-void Queen::generateAttacks(){
+void SlidingPieces::generateAttacks(){
     
     // do nothing if the piece is captured
     if(isCaptured){
@@ -30,7 +16,7 @@ void Queen::generateAttacks(){
         enemyKing = 'K';
      }
 
-    for(int i = 0; i < 8; i++){
+    for(int i = start; i =< end; i++){
         for(int target = getPos() + direction(i); 0 <= target && target < 64; target += direction(i)){
             setAttack(target);
 
@@ -70,6 +56,9 @@ void Queen::generateAttacks(){
                                 }
                             }
                         }else{
+                            /*
+                            If we see another piece, then end the loop since there is no pin.
+                            */
                             break;
                         }
                     }
@@ -89,9 +78,6 @@ void Queen::generateAttacks(){
 
 }
 
-
-// plz account for check and stuff
-
 void getMoves(std::vector<Move>& moves){
 
     // do nothing if the piece is captured
@@ -105,13 +91,14 @@ void getMoves(std::vector<Move>& moves){
     move.start = getPos();
     bool check = (getCheckCount() == 1);
 
-    for(int i = 0; i < 8; i++){
+
+    for(int i = start; i =< end; i++){
 
         /*
         We check whether the direction aligns with the pin. Note we only need to check this once per direction, since
         the pin is always in a ray.
         */
-        if(isPinned){
+        if(this->isPinned()){
             if(!isPin(target + direction(i))){
                 continue;
             }

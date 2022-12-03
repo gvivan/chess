@@ -6,14 +6,11 @@ private:
     const Board* owner;
     int pos;
     char type;
-    std::vector<Int> pinSquares;
-protected:
-
     bool isWhite; // this is just so we don't have to check upper or lower case everytime
     int value;
     bool isCaptured;
-    
-
+    std::vector<Int> pinSquares;
+protected:
     int getPos() {return pos;};
     Piece* pieceAt(int location) {return owner->board[location];};
     // the directions, 0-3 are Rook directions, 4-7 are Bishop directions
@@ -46,7 +43,10 @@ protected:
 
 
 public:
-    Piece(Board* owner, int pos, char type): owner{owner}, pos{pos}, type{type} {};
+    Piece(Board* owner, int pos, char type, bool isWhite, int value): owner{owner}, pos{pos}, type{type}, isWhite{isWhite}, value{value} {};
+
+    // Virtual Constructor, call this on board to return a unique pointer
+    Piece* CreateUniquePiece(Board* owner, int pos, char type);
 
     // Set all the squares this piece is attacking to TRUE
     virtual void generateAttacks() = 0;

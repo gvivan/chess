@@ -10,8 +10,10 @@ private:
     int start;
     int end;
 public:
+    SlidingPieces(Board* owner, int pos, char type, bool isWhite, int value, int start, int end): Piece{owner, pos, type, isWhite, value}, start{start}, end{end} {};
     virtual void generateAttacks();
-    virtual void getMoves();
+    virtual void getMoves(std::vector<Move>& moves);
+    virtual ~SlidingPieces() = 0;
 }
 
 
