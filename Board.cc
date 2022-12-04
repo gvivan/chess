@@ -230,14 +230,14 @@ void Board::importFEN(std::string FEN){
             i = i - input + '0' + 1;
         }else if(isupper(input)){
             if(input == 'K'){
-                WKing = Piece::CreateUniquePiece(this, i, input);
+                WKing = Piece::CreateUniqueKing(this, i, input);
             }else{
                 WPieces[numW] = Piece::CreateUniquePiece(this, i, input);
                 numW++;
             }
         }else{
             if(input == 'K'){
-                BKing = Piece::CreateUniquePiece(this, i, input);
+                BKing = Piece::CreateUniqueKing(this, i, input);
             }else{
                 BPieces[numB] = Piece::CreateUniquePiece(this, i, input);
                 numB++;

@@ -80,12 +80,21 @@ void Piece::clearPins(){
     pinSquares.clear();
 }
 
-unique_ptr<Piece> Piece::CreateUniquePiece(Board* owner, int pos, char type){
+unique_ptr<King> Piece::CreateUniqueKing(Board* owner, int pos, char type){
     bool team = isupper(type);
     switch (tolower(type)) {
         case 'k':
             return make_unique<King>(owner, pos, type, team, 100); // 100 is arbitrary, idk yet
             break;
+        default:
+            return nullptr;
+            break;
+    }
+}
+
+unique_ptr<Piece> Piece::CreateUniquePiece(Board* owner, int pos, char type){
+    bool team = isupper(type);
+    switch (tolower(type)) {
         case 'q':
             return make_unique<Queen>(owner, pos, type, team, 9); 
             break;

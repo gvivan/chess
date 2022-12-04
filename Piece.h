@@ -6,7 +6,7 @@
 #include "Move.h"
 
 class Board;
-
+class King;
 
 class Piece {
 private:
@@ -59,6 +59,7 @@ public:
     Piece(Board* owner, int pos, char type, bool isWhite, int value): owner{owner}, pos{pos}, type{type}, isWhite{isWhite}, value{value} {};
 
     // Virtual Constructor, call this on board to return a unique pointer
+    static std::unique_ptr<King> CreateUniqueKing(Board* owner, int pos, char type);
     static std::unique_ptr<Piece> CreateUniquePiece(Board* owner, int pos, char type);
 
     // Set all the squares this piece is attacking to TRUE
