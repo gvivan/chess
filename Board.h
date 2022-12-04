@@ -47,11 +47,11 @@ private:
     */
     int numW;
     std::unique_ptr<Piece> WPieces[63];
-    std::unique_ptr<King> WKing;
+    std::unique_ptr<Piece> WKing;
 
     int numB;
     std::unique_ptr<Piece> BPieces[63];
-    std::unique_ptr<King> BKing;
+    std::unique_ptr<Piece> BKing;
 
 
     int checkCount; // the number of pieces that are checking the king
