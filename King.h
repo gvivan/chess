@@ -1,6 +1,7 @@
 #ifndef KING_H
 #define KING_H
 
+
 class King : public Piece {
 public:
     King(Board* owner, int pos, char type, bool isWhite, int value): Piece{owner, pos, type, isWhite, value} {}; // type should be 'K' or 'k'
