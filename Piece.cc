@@ -76,6 +76,10 @@ void Piece::setPos(int set){
     pos = set;
 }
 
+bool Piece::getIsCaptured(){
+	return isCaptured;
+}
+
 void Piece::clearPins(){
     pinSquares.clear();
 }

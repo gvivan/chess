@@ -5,7 +5,7 @@ using namespace std;
 void Knight::generateAttacks(){
 
     // do nothing if the piece is captured
-    if(isCaptured){
+    if(this->getIsCaptured()){
          return;
     }
 
@@ -41,7 +41,7 @@ void Knight::generateAttacks(){
 
 void Knight::getMoves(vector<Move>& moves){
 
-    if(isCaptured){
+    if(this->getIsCaptured()){
         return;
     }else if(getCheckCount() > 1){
         return;
@@ -57,7 +57,7 @@ void Knight::getMoves(vector<Move>& moves){
     move.promotionPiece = '*';
     bool check = (getCheckCount() == 1);
 
-    for(int i = start; i =< end; i++){
+    for(int i = move.start; i <= move.end; i++){
 
         for(int target = getPos() + KnightDirection(i); 0 <= target && target < 64; target += KnightDirection(i)){
             move.end = target;

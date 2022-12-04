@@ -74,8 +74,9 @@ public:
     void setCapture(bool set);
 
     int getPos();
-
     void setPos(int set);
+
+    bool getIsCaptured();
 
     void clearPins();
 
