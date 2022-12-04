@@ -4,20 +4,9 @@
 #include <vector>
 #include <memory>
 
-enum moveType {undef=0, regular, capture, pawnDouble, Qcastling, Kcastling, enPassant, promotion};
+#include "King.h"
 
-enum attackType {noAttack=0, attack, kingAttack};
-
-class Piece;
-
-class Move {
-public:
-    int start;
-    int end;
-    Piece* captured;
-    moveType type;
-    char promotionPiece;
-};
+#include "Move.h"
 
 class Board {
 private:
@@ -58,11 +47,11 @@ private:
     */
     int numW;
     std::unique_ptr<Piece> WPieces[63];
-    std::unique_ptr<Piece> WKing;
+    std::unique_ptr<King> WKing;
 
     int numB;
     std::unique_ptr<Piece> BPieces[63];
-    std::unique_ptr<Piece> BKing;
+    std::unique_ptr<King> BKing;
 
 
     int checkCount; // the number of pieces that are checking the king

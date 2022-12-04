@@ -2,15 +2,15 @@
 #define PIECE_H
 
 #include <memory>
+#include <vector>
+#include "Move.h"
 
 class Board;
-class Move;
-enum moveType;
-enum attackType;
+
 
 class Piece {
 private:
-    const Board* owner;
+    Board* const owner;
     int pos;
     char type;
     bool isWhite; // this is just so we don't have to check upper or lower case everytime

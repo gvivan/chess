@@ -1,6 +1,14 @@
 #include "Piece.h"
 #include <cctype>
 #include <memory>
+#include "Board.h"
+#include "Move.h"
+#include "King.h"
+#include "Bishop.h"
+#include "Queen.h"
+#include "Knight.h"
+#include "Rook.h"
+#include "Pawn.h"
 
 using namespace std;
 
@@ -72,7 +80,7 @@ void Piece::clearPins(){
     pinSquares.clear();
 }
 
-static unique_ptr<Piece> Piece::CreateUniquePiece(Board* owner, int pos, char type){
+unique_ptr<Piece> Piece::CreateUniquePiece(Board* owner, int pos, char type){
     bool team = isupper(type);
     switch (tolower(type)) {
         case 'k':
@@ -108,6 +116,8 @@ bool Piece::castleRights(bool team, bool side){
         return owner->BKcastle;
     }else if(!team && !side){
         return owner->BQcastle;
+    }else{
+        return false;
     }
 }
 

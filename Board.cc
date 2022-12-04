@@ -41,11 +41,11 @@ void Board::updateAttacks(){
 void Board::generateMoves(std::vector<Move> &moves){
     if(whiteTurn){
         for(int i = 0; i < numW; i++){
-            WPieces[i]->getMoves(&moves);
+            WPieces[i]->getMoves(moves);
         }
     }else{
         for(int i = 0; i < numB; i++){
-            BPieces[i]->getMoves(&moves);
+            BPieces[i]->getMoves(moves);
         }
     }
 }
@@ -126,7 +126,7 @@ void Board::makeMove(Move move){
 void Board::unmakeMove(){
     Move move = movesPlayed.back();
     enPassantSquare = -1;
-    movesPlayed.pop();
+    movesPlayed.pop_back();
 
     // checking castling rights...
     if(!whiteTurn){
@@ -169,7 +169,7 @@ void Board::unmakeMove(){
         }
     }
     
-    board[move.start] = board[move.end]
+    board[move.start] = board[move.end];
     board[move.end]->setPos(move.end);
     if(move.type == regular || move.type == pawnDouble){
         board[move.end] = nullptr;
@@ -187,19 +187,19 @@ void Board::unmakeMove(){
     }else if(move.type == promotion){
         if(whiteTurn){
             for(int i = 0; i < numW; i++){
-                if(move.start == WPieces[i].get()){
+                if(board[move.start] == WPieces[i].get()){
                     WPieces[i].reset();
-                    Wpieces[i] = Piece::CreateUniquePiece(this, start, 'P');
-                    board[move.end] = WPieces[i].get();
+                    WPieces[i] = Piece::CreateUniquePiece(this, move.start, 'P');
+                    board[move.start] = WPieces[i].get();
                     break;
                 }
             }
         }else{
             for(int i = 0; i < numB; i++){
-                if(move.start == BPieces[i].get()){
+                if(board[move.start] == BPieces[i].get()){
                     BPieces[i].reset();
-                    Bpieces[i] = Piece::CreateUniquePiece(this, start, 'p');
-                    board[move.end] = BPieces[i].get();
+                    BPieces[i] = Piece::CreateUniquePiece(this, move.start, 'p');
+                    board[move.start] = BPieces[i].get();
                     break;
                 }
             }
