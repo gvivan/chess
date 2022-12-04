@@ -1,11 +1,12 @@
 #include "Pawn.h"
+#include <vector>
 
 using namespace std;
 
 void Pawn::generateAttacks(){
 
     // do nothing if the piece is captured
-    if(isCaptured){
+    if(this->getIsCaptured()){
             return;
     }
 
@@ -21,7 +22,7 @@ void Pawn::generateAttacks(){
         offset = 2;
     }
 
-    for(int i = 4, i <= 5; i++){
+    for(int i = 4; i <= 5; i++){
         target = getPos()+ direction(i + offset);
         if(0 <= target && target < 64){
             setAttack(target);
@@ -57,7 +58,7 @@ void Pawn::getMoves(vector<Move>& moves){
     }
 
     // Generate attacking moves
-    for(int i = 4, i <= 5; i++){
+    for(int i = 4; i <= 5; i++){
         target = getPos()+ direction(i + offset);
         if(0 <= target && target < 64){
             if(isPinned() && !(isPin(target))){
@@ -75,7 +76,9 @@ void Pawn::getMoves(vector<Move>& moves){
             }else if(target == getEnPassant()){
                 move.end = target;
                 move.type = enPassant;
-                move.captured = getPos() + direction(2 - offset);
+                move.captured = board[getPos() + direction(2 - offset)];
+		board[getPos() + direction(2 - offset)] = nullptr;
+		setCapture(true);
                 if(checkEnPassant(move)){
                     moves.push_back(move);
                 }
