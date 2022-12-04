@@ -23,18 +23,18 @@ void King::getMoves(vector<Move>& moves){
     move.captured = nullptr;
 
     if(castleRights(this->getTeam(), true)){ // checking kingside castle
-        if(getAttack[move.start] == noAttack && getAttack[move.start + 1] == noAttack && getAttack[move.start + 2] == noAttack){
+        if(getAttack(move.start) == noAttack && getAttack(move.start + 1) == noAttack && getAttack(move.start + 2) == noAttack){
             move.end = getPos() + 2;
             move.type = Kcastling;
-            moves.push_back(move)
+            moves.push_back(move);
         }
     }
 
     if(castleRights(this->getTeam(), false)){ // checking queenside castle
-        if(getAttack[move.start] == noAttack && getAttack[move.start - 1] == noAttack && getAttack[move.start - 2] == noAttack){
+        if(getAttack(move.start) == noAttack && getAttack(move.start - 1) == noAttack && getAttack(move.start - 2) == noAttack){
             move.end = getPos() - 2;
             move.type = Qcastling;
-            moves.push_back(move)
+            moves.push_back(move);
         }
     }
     
@@ -51,7 +51,7 @@ void King::getMoves(vector<Move>& moves){
 
             if(PieceCapture != nullptr){
 
-                if(capture->getTeam() != this->getTeam()){
+                if(PieceCapture->getTeam() != this->getTeam()){
                     move.captured = PieceCapture;
                     move.type = capture;
                     // here, we could give a value to moves depending on what was captured (to do later)
@@ -92,6 +92,8 @@ bool King::inCheck(){
             }
         }
     }
+
+    return false;
 }
 
 
