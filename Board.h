@@ -1,10 +1,14 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-enum moveType {undef=0, regular, capture, pawnDouble, castling, enPassant, promotion};
+#include <vector>
+#include <memory>
+
+enum moveType {undef=0, regular, capture, pawnDouble, Qcastling, Kcastling, enPassant, promotion};
 
 enum attackType {noAttack=0, attack, kingAttack};
 
+class Piece;
 
 class Move {
 public:
@@ -12,15 +16,13 @@ public:
     int end;
     Piece* captured;
     moveType type;
+    char promotionPiece;
 };
 
 class Board {
 private:
-    friend class Piece;
-
-
     
-    
+    bool initialized; // FALSE until importFEN or setup is run
     bool whiteTurn; // TRUE if white's turn, FALSE if black's turn
 
     /*
@@ -30,18 +32,16 @@ private:
     Piece* board[64];
     attackType attacks[64];
 
-    // The position of the attacking piece if checkCount==1 (set to -1 otherwise)
+    // The position of the attacking piece if checkCount==1 (it doesn't matter otherwise)
     int attackingPiece;
 
-    /*
-    Here, we keep track of which pieces are pinned to clear the pins before updating.
-    */
-    std::vector<Piece*> pins;
+    // Current enPassant Square (set to -1 if no enPassant)
+    int enPassantSquare;
 
     /*
     We keep track of the moves played in a vector to allow for undos
     */
-    std::vector<Move> movePlayed;
+    std::vector<Move> movesPlayed;
 
     /*
     We save the moves generated for this turn (this is only beneficial for human moves)
@@ -71,19 +71,20 @@ private:
     bool WKcastle; // ...
     bool BQcastle;
     bool BKcastle;
-    
-public:
-    void makeMove(Move move);
-    void importFEN(std::string FEN);
 
     // this function updates the attacks map as well as the check count and pins
     void updateAttacks();
 
+    friend class Piece;
+    
+public:
+    Board();
+    // The move given to makeMove should be legal, except for enPassant checking.
+    void makeMove(Move move);
+    void unmakeMove();
+    void importFEN(std::string FEN);
 
-    std::vector<Move> generateMoves();
-
-
-
+    void generateMoves(std::vector<Move> &moves);
 
 };
 

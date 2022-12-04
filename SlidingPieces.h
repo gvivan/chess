@@ -1,6 +1,8 @@
 #ifndef SLIDINGPIECES_H
 #define SLIDINGPIECES_H
 
+#include "Piece.h"
+
 class SlidingPieces : public Piece {
 private:
     /*
@@ -14,7 +16,7 @@ public:
     virtual void generateAttacks();
     virtual void getMoves(std::vector<Move>& moves);
     virtual ~SlidingPieces() = 0;
-}
+};
 
 
 

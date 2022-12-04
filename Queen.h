@@ -9,6 +9,6 @@ public:
     Queen(Board* owner, int pos, char type, bool isWhite, int value): SlidingPieces{owner, pos, type, isWhite, value, 0, 7} {};
     virtual void generateAttacks();
     virtual void getMoves(std::vector<Move>& moves);
-}
+};
 
 #endif

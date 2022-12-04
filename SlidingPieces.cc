@@ -89,6 +89,7 @@ void getMoves(std::vector<Move>& moves){
     
     Move move;
     move.start = getPos();
+    move.promotionPiece = '*';
     bool check = (getCheckCount() == 1);
 
 

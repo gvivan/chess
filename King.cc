@@ -1,4 +1,5 @@
 #include "King.h"
+#include <cctype>
 
 using namespace std;
 
@@ -18,20 +19,21 @@ void King::getMoves(vector<Move>& moves){
 
     Move move;
     move.start = getPos();
+    move.promotionPiece = '*';
     move.captured = nullptr;
 
-    if(castleRights(isWhite, true)){ // checking kingside castle
+    if(castleRights(this->getTeam(), true)){ // checking kingside castle
         if(getAttack[move.start] == noAttack && getAttack[move.start + 1] == noAttack && getAttack[move.start + 2] == noAttack){
             move.end = getPos() + 2;
-            move.type = castling;
+            move.type = Kcastling;
             moves.push_back(move)
         }
     }
 
-    if(castleRights(isWhite, false)){ // checking queenside castle
+    if(castleRights(this->getTeam(), false)){ // checking queenside castle
         if(getAttack[move.start] == noAttack && getAttack[move.start - 1] == noAttack && getAttack[move.start - 2] == noAttack){
             move.end = getPos() - 2;
-            move.type = castling;
+            move.type = Qcastling;
             moves.push_back(move)
         }
     }
@@ -64,6 +66,32 @@ void King::getMoves(vector<Move>& moves){
         }
     }
 
+}
+
+bool King::inCheck(){
+    for(int i = 0; i <= 3; i++){
+        for(int target = getPos() + direction(i); 0 <= target && target < 64; target += direction(i)){
+            if(pieceAt(target) != nullptr){
+                if(pieceAt(target)->getTeam() == this->getTeam()){
+                    break;
+                }else if(toupper(pieceAt(target)->getPiece()) == 'Q' || toupper(pieceAt(target)->getPiece()) == 'R'){
+                    return true;
+                }
+            }
+        }
+    }
+
+    for(int i = 4; i <= 7; i++){
+        for(int target = getPos() + direction(i); 0 <= target && target < 64; target += direction(i)){
+            if(pieceAt(target) != nullptr){
+                if(pieceAt(target)->getTeam() == this->getTeam()){
+                    break;
+                }else if(toupper(pieceAt(target)->getPiece()) == 'Q' || toupper(pieceAt(target)->getPiece()) == 'B'){
+                    return true;
+                }
+            }
+        }
+    }
 }
 
 

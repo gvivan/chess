@@ -25,15 +25,10 @@ void Knight::generateAttacks(){
             setAttack(target);
 
             if(pieceAt(target) != nullptr){
-                if(pieceAt(target)->getTeam() == this->getTeam()){
-                    break;
-                }else if(pieceAt(target)->getPiece() == enemyKing){
+                if(pieceAt(target)->getPiece() == enemyKing){
 
                     /* 
-                    if the attacked piece is the king, set the previous squares to kingAttack, increase the check counter,
-                    and continue the loop.
-                    ...
-                    Notice that we set getPos() to be a kingAttack square for capturing purposes
+                    If the Piece attacks the king, increase checkCount and set attcking piece to current position.
                     */
                     addCheckCount();
                     setAttackingPiece(getPos());
@@ -59,11 +54,12 @@ void Knight::getMoves(vector<Move>& moves){
     
     Move move;
     move.start = getPos();
+    move.promotionPiece = '*';
     bool check = (getCheckCount() == 1);
 
     for(int i = start; i =< end; i++){
 
-        for(int target = getPos() + direction(i); 0 <= target && target < 64; target += direction(i)){
+        for(int target = getPos() + KnightDirection(i); 0 <= target && target < 64; target += KnightDirection(i)){
             move.end = target;
             if(check){
                 // If check, only consider moves that block it or capture attacking piece

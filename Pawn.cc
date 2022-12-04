@@ -2,33 +2,44 @@
 
 using namespace std;
 
-Pawn::Pawn(Board* owner, int pos, char type){
-    if(type == 'P'){
-        isWhite = true;
-    }else{
-        isWhite = false;
-    }
-    value = 1; // this might be changed later depending how we evaluate things
-
-    // the king can never be captured or pinned
-    isCaptured = false;
-    thePin = nullptr;
-}
-
 void Pawn::generateAttacks(){
 
-        // do nothing if the piece is captured
-        if(isCaptured){
-                return;
-        }
+    // do nothing if the piece is captured
+    if(isCaptured){
+            return;
+    }
 
-        int target;
-    for(int i = 0; i < 8; i++){
-        target = getPos() + direction(i);
-        if(0 <= target && target > 64){
+    int target;
+    int offset;
+    char enemyKing;
+    // set enemy king char depending on our team and setting offset.
+    if(this->getTeam()){
+        enemyKing = 'k';
+        offset = 0;
+    }else{
+        enemyKing = 'K';
+        offset = 2;
+    }
+
+    for(int i = 4, i <= 5; i++){
+        target = getPos()+ direction(i + offset);
+        if(0 <= target && target < 64){
             setAttack(target);
+            if(pieceAt(target) != nullptr){
+                if(pieceAt(target)->getPiece() == enemyKing){
+
+                    /* 
+                    If the Piece attacks the king, increase checkCount and set attcking piece to current position.
+                    */
+                    addCheckCount();
+                    setAttackingPiece(getPos());
+                }
+            }
         }
     }
+
+    // write stuff
+    
 }
 
 void Pawn::getMoves(vector<Move>& moves){
@@ -36,48 +47,77 @@ void Pawn::getMoves(vector<Move>& moves){
     Move move;
     move.start = getPos();
     move.captured = nullptr;
-
-    if(castleRights(isWhite, true)){ // checking kingside castle
-        if(getAttack[move.start] == noAttack && getAttack[move.start + 1] == noAttack && getAttack[move.start + 2] == noAttack){
-            move.end = getPos() + 2;
-            move.type = castling;
-            moves.push_back(move)
-        }
-    }
-
-    if(castleRights(isWhite, false)){ // checking queenside castle
-        if(getAttack[move.start] == noAttack && getAttack[move.start - 1] == noAttack && getAttack[move.start - 2] == noAttack){
-            move.end = getPos() - 2;
-            move.type = castling;
-            moves.push_back(move)
-        }
-    }
-
+    move.promotionPiece = '*';
     int target;
-    Piece* PieceCapture;
-     for(int i = 0; i < 8; i++){
+    int offset;
+    if(this->getTeam()){
+        offset = 0;
+    }else{
+        offset = 2;
+    }
 
-        target = getPos() + direction(i);
-
-        if(0 <= target && target > 64 && !getAttack(target)){
-                move.end = target;
-                PieceCapture = pieceAt(target);
-                if(PieceCapture != nullptr){
-
-                if(capture->getTeam() != this->getTeam()){
-                    move.captured = PieceCapture;
+    // Generate attacking moves
+    for(int i = 4, i <= 5; i++){
+        target = getPos()+ direction(i + offset);
+        if(0 <= target && target < 64){
+            if(isPinned() && !(isPin(target))){
+                continue;
+            }
+            if(pieceAt(target) != nullptr){
+                if(pieceAt(target)->getTeam() == this->getTeam()){
+                    continue;
+                }else{
+                    move.end = target;
                     move.type = capture;
-                    // here, we could give a value to moves depending on what was captured (to do later)
+                    move.captured = pieceAt(target);
                     moves.push_back(move);
                 }
+            }else if(target == getEnPassant()){
+                move.end = target;
+                move.type = enPassant;
+                move.captured = getPos() + direction(2 - offset);
+                if(checkEnPassant(move)){
+                    moves.push_back(move);
+                }
+            }
+        }
+    }
+
+    
+
+    // Generate 1 up move
+    target = getPos() + direction(offset);
+    if(0 <= target && target < 64){
+        if( !((isPinned() && !(isPin(target))) || pieceAt(target) != nullptr) ){
+            move.end = target;
+            if(target > 55 || target < 8){
+                move.type = promotion;
+                if(this->getTeam()){
+                    for(char p : {'Q', 'R', 'B', 'N'}){
+                        move.promotionPiece = p;
+                        moves.push_back(move);
+                    }
+                }else{
+                    for(char p : {'q', 'r', 'b', 'n'}){
+                        move.promotionPiece = p;
+                        moves.push_back(move);
+                    }
+                }
+                    
             }else{
-                move.captured = nullptr;
                 move.type = regular;
                 moves.push_back(move);
             }
-
+            
+            // Generate double up move
+            target += direction(offset);
+            if(0 <= target && target < 64){
+                if(pieceAt(target) != nullptr){
+                    move.end = target;
+                    move.type = pawnDouble;
+                    moves.push_back(move);
+                }
+            }
         }
     }
-
 }
-                                                                               83,1          Bot
