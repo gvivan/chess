@@ -1,5 +1,7 @@
 #include "King.h"
+#include "Move.h"
 #include <cctype>
+#include "Piece.h"
 
 using namespace std;
 
@@ -9,7 +11,7 @@ void King::generateAttacks(){
     int target;
     for(int i = 0; i < 8; i++){
         target = getPos() + direction(i);
-        if(0 <= target && target > 64){
+        if(target != moveData[getPos()][i]){
             setAttack(target);
         }
     }
@@ -22,8 +24,11 @@ void King::getMoves(vector<Move>& moves){
     move.promotionPiece = '*';
     move.captured = nullptr;
 
+    cout << "checking castle..." << endl;
     if(castleRights(this->getTeam(), true)){ // checking kingside castle
-        if(getAttack(move.start) == noAttack && getAttack(move.start + 1) == noAttack && getAttack(move.start + 2) == noAttack){
+        cout << "hello?" << endl;
+        if(getAttack(move.start) == noAttack && getAttack(move.start + 1) == noAttack && getAttack(move.start + 2) == noAttack
+        && pieceAt(move.start + 1) == nullptr && pieceAt(move.start + 2) == nullptr){
             move.end = getPos() + 2;
             move.type = Kcastling;
             moves.push_back(move);
@@ -31,7 +36,8 @@ void King::getMoves(vector<Move>& moves){
     }
 
     if(castleRights(this->getTeam(), false)){ // checking queenside castle
-        if(getAttack(move.start) == noAttack && getAttack(move.start - 1) == noAttack && getAttack(move.start - 2) == noAttack){
+        if(getAttack(move.start) == noAttack && getAttack(move.start - 1) == noAttack && getAttack(move.start - 2) == noAttack
+        && pieceAt(move.start - 1) == nullptr && pieceAt(move.start - 2) == nullptr && pieceAt(move.start - 3) == nullptr){
             move.end = getPos() - 2;
             move.type = Qcastling;
             moves.push_back(move);
@@ -45,7 +51,7 @@ void King::getMoves(vector<Move>& moves){
 
         target = getPos() + direction(i);
 
-        if(0 <= target && target > 64 && !getAttack(target)){
+        if(target != moveData[getPos()][i] && getAttack(target) == noAttack){
             move.end = target;
             PieceCapture = pieceAt(target);
 
@@ -70,7 +76,7 @@ void King::getMoves(vector<Move>& moves){
 
 bool King::inCheck(){
     for(int i = 0; i <= 3; i++){
-        for(int target = getPos() + direction(i); 0 <= target && target < 64; target += direction(i)){
+        for(int target = getPos() + direction(i); target != moveData[getPos()][i]; target += direction(i)){
             if(pieceAt(target) != nullptr){
                 if(pieceAt(target)->getTeam() == this->getTeam()){
                     break;
@@ -82,7 +88,7 @@ bool King::inCheck(){
     }
 
     for(int i = 4; i <= 7; i++){
-        for(int target = getPos() + direction(i); 0 <= target && target < 64; target += direction(i)){
+        for(int target = getPos() + direction(i); target != moveData[getPos()][i]; target += direction(i)){
             if(pieceAt(target) != nullptr){
                 if(pieceAt(target)->getTeam() == this->getTeam()){
                     break;

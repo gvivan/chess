@@ -2,10 +2,18 @@
 #include <sstream>
 #include <cctype>
 #include <string>
+#include <iostream>
 
 #include "Piece.h"
+#include "Knight.h"
+
+using namespace std;
 
 Board::Board(){
+    
+    Piece::initializeData();
+    Knight::initializeKnightData();
+
     initialized = false;
     whiteTurn = true;
     attackingPiece = -1;
@@ -73,6 +81,7 @@ void Board::makeMove(Move move){
             WKcastle = false;
         }
     }
+    
 
     board[move.end] = board[move.start];
     board[move.start] = nullptr;
@@ -117,10 +126,12 @@ void Board::makeMove(Move move){
             }
         }
     }
-
     movesPlayed.push_back(move);
+    
     whiteTurn = !whiteTurn;
+
     updateAttacks();
+    // print();
 }
 
 void Board::unmakeMove(){
@@ -152,7 +163,7 @@ void Board::unmakeMove(){
         for(int i : {56, 60, 63}){
             if(move.start == i){
                 for(auto p : movesPlayed){
-                    if(p.start == i){
+                    if(p.start == i || p.end == i){
                         if(i == 56){
                             WQcastle = false;
                         }else if(i == 60){
@@ -170,7 +181,7 @@ void Board::unmakeMove(){
     }
     
     board[move.start] = board[move.end];
-    board[move.end]->setPos(move.end);
+    board[move.end]->setPos(move.start);
     if(move.type == regular || move.type == pawnDouble){
         board[move.end] = nullptr;
     }else if(move.type == capture){
@@ -205,17 +216,23 @@ void Board::unmakeMove(){
             }
         }
     }
-
-    if(movesPlayed.back().type == pawnDouble){
-        if(whiteTurn){
-            enPassantSquare = movesPlayed.back().end - 8;
-        }else{
-            enPassantSquare = movesPlayed.back().end + 8;
+    
+    if(!movesPlayed.empty()){
+        if(movesPlayed.back().type == pawnDouble){
+            if(whiteTurn){
+                enPassantSquare = movesPlayed.back().end - 8;
+            }else{
+                enPassantSquare = movesPlayed.back().end + 8;
+            }
         }
     }
     whiteTurn = !whiteTurn;
     updateAttacks();
+     // print();
+}
 
+int todigit(char c){
+  return c - '0';
 }
 
 void Board::importFEN(std::string FEN){
@@ -227,24 +244,67 @@ void Board::importFEN(std::string FEN){
             s >> input;
         }
         if(isdigit(input)){
-            i = i - input + '0' + 1;
+            int k = i - todigit(input);
+            while(i > k + 1){
+                board[i] = nullptr;
+                --i;
+            }
+            board[i] = nullptr;
+            
         }else if(isupper(input)){
             if(input == 'K'){
                 WKing = Piece::CreateUniqueKing(this, i, input);
+                board[i] = WKing.get();
             }else{
                 WPieces[numW] = Piece::CreateUniquePiece(this, i, input);
+                board[i] = WPieces[numW].get();
                 numW++;
             }
         }else{
-            if(input == 'K'){
+            if(input == 'k'){
                 BKing = Piece::CreateUniqueKing(this, i, input);
+                board[i] = BKing.get();
             }else{
                 BPieces[numB] = Piece::CreateUniquePiece(this, i, input);
+                board[i] = BPieces[numB].get();
                 numB++;
             }
         }
     }
     initialized = true;
+    print();
+}
+
+int Board::perft(int depth){
+    if(depth == 0){
+        return 1;
+    }
+    std::vector<Move> moves;
+    int numPos = 0;
+    generateMoves(moves);
+    for(auto move : moves){
+        makeMove(move);
+        numPos += perft(depth - 1);
+        unmakeMove();
+    }
+    return numPos;
+}
+
+void Board::print() {
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 8; j++){
+            if(board[i * 8 + j] == nullptr){
+                cout << '-';
+            }else{
+                cout << board[i * 8 + j]->getPiece();
+            }
+        }
+        cout << endl;
+    }
+}
+
+int Board::moveNum(){
+    return movesPlayed.size();
 }
 
 

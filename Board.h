@@ -72,8 +72,10 @@ public:
     void makeMove(Move move);
     void unmakeMove();
     void importFEN(std::string FEN);
-
     void generateMoves(std::vector<Move> &moves);
+    int perft(int depth);
+    void print();
+    int moveNum();
 
 };
 

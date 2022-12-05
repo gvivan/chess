@@ -1,10 +1,17 @@
 #include "SlidingPieces.h"
+#include <iostream>
+
+using namespace std;
+
+SlidingPieces::~SlidingPieces() {};
 
 
 void SlidingPieces::generateAttacks(){
     
+    
+    
     // do nothing if the piece is captured
-    if(isCaptured){
+    if(getIsCaptured()){
         return;
     }
 
@@ -16,8 +23,14 @@ void SlidingPieces::generateAttacks(){
         enemyKing = 'K';
      }
 
-    for(int i = start; i =< end; i++){
-        for(int target = getPos() + direction(i); 0 <= target && target < 64; target += direction(i)){
+    for(int i = start; i <= end; i++){ // looping through the directions
+
+        // check if the position is its own bound
+        if(getPos() == moveData[getPos()][i] - direction(i)){
+            continue;
+        }
+
+        for(int target = getPos() + direction(i); target != moveData[getPos()][i]; target += direction(i)){
             setAttack(target);
 
             // if there is a piece at the square
@@ -44,10 +57,10 @@ void SlidingPieces::generateAttacks(){
                     */
                     
 
-                    for(int king = target + direction(i); 0 <= king && king < 64; king += direction(i)){
+                    for(int king = target + direction(i); king != moveData[getPos()][i]; king += direction(i)){
 
                         if(pieceAt(king) != nullptr){
-                            if(pieceAt(king)->getPiece == enemyKing){
+                            if(pieceAt(king)->getPiece() == enemyKing){
                                 /*
                                 Here, we add the squares on the ray to the pin vector of the target piece, restricting its movement
                                 */
@@ -78,10 +91,10 @@ void SlidingPieces::generateAttacks(){
 
 }
 
-void getMoves(std::vector<Move>& moves){
+void SlidingPieces::getMoves(std::vector<Move>& moves){
 
     // do nothing if the piece is captured
-    if(isCaptured){
+    if(getIsCaptured()){
         return;
     }else if(getCheckCount() > 1){
         return;
@@ -93,20 +106,25 @@ void getMoves(std::vector<Move>& moves){
     bool check = (getCheckCount() == 1);
 
 
-    for(int i = start; i =< end; i++){
 
-        /*
-        We check whether the direction aligns with the pin. Note we only need to check this once per direction, since
-        the pin is always in a ray.
-        */
-        if(this->isPinned()){
-            if(!isPin(target + direction(i))){
-                continue;
-            }
+    for(int i = start; i <= end; i++){
+
+
+        // check if the position is its own bound
+        if(getPos() == moveData[getPos()][i] - direction(i)){
+            continue;
         }
 
-
-        for(int target = getPos() + direction(i); 0 <= target && target < 64; target += direction(i)){
+        for(int target = getPos() + direction(i); target != moveData[getPos()][i]; target += direction(i)){
+            /*
+            We check whether the direction aligns with the pin. Note we only need to check this once per direction, since
+            the pin is always in a ray.
+            */
+            if(this->isPinned()){
+            if(!isPin(target + direction(i))){
+                break;
+            }
+        }
             move.end = target;
             if(check){
                 // If check, only consider moves that block it or capture attacking piece
@@ -119,6 +137,7 @@ void getMoves(std::vector<Move>& moves){
                     break;
                 }else{
                     // In the future, we can guess the value of this move based on the capture
+
                     move.type = capture;
                     move.captured = pieceAt(target);
                     moves.push_back(move);

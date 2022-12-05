@@ -24,7 +24,7 @@ void Pawn::generateAttacks(){
 
     for(int i = 4; i <= 5; i++){
         target = getPos()+ direction(i + offset);
-        if(0 <= target && target < 64){
+        if(target != moveData[getPos()][i + offset]){ // this checks whether the pawn is at the edge of the board
             setAttack(target);
             if(pieceAt(target) != nullptr){
                 if(pieceAt(target)->getPiece() == enemyKing){
@@ -60,7 +60,7 @@ void Pawn::getMoves(vector<Move>& moves){
     // Generate attacking moves
     for(int i = 4; i <= 5; i++){
         target = getPos()+ direction(i + offset);
-        if(0 <= target && target < 64){
+        if(target != moveData[getPos()][i + offset]){
             if(isPinned() && !(isPin(target))){
                 continue;
             }
@@ -76,9 +76,7 @@ void Pawn::getMoves(vector<Move>& moves){
             }else if(target == getEnPassant()){
                 move.end = target;
                 move.type = enPassant;
-                move.captured = board[getPos() + direction(2 - offset)];
-		board[getPos() + direction(2 - offset)] = nullptr;
-		setCapture(true);
+                move.captured = pieceAt(getPos() + direction(2 - offset));
                 if(checkEnPassant(move)){
                     moves.push_back(move);
                 }
@@ -90,7 +88,7 @@ void Pawn::getMoves(vector<Move>& moves){
 
     // Generate 1 up move
     target = getPos() + direction(offset);
-    if(0 <= target && target < 64){
+    if(target != moveData[getPos()][offset]){
         if( !((isPinned() && !(isPin(target))) || pieceAt(target) != nullptr) ){
             move.end = target;
             if(target > 55 || target < 8){
@@ -114,8 +112,8 @@ void Pawn::getMoves(vector<Move>& moves){
             
             // Generate double up move
             target += direction(offset);
-            if(0 <= target && target < 64){
-                if(pieceAt(target) != nullptr){
+            if((getTeam() && move.start < 16) || (!getTeam() && move.start > 40)){
+                if(pieceAt(target) == nullptr){
                     move.end = target;
                     move.type = pawnDouble;
                     moves.push_back(move);

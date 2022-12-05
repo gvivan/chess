@@ -4,14 +4,17 @@
 
 class Knight : public Piece {
 private:
-    static const int KnightDirection(int index) {
-        static const int dir[] = {-17, -15, -10, -6, 6, 10, 15, 17};
-        return dir[index];
-    };
+    // This holds every legal move for Knights, -1 if not legal
+    static int KnightMoveData[64][8];
+
+
 public:
     Knight(Board* owner, int pos, char type, bool isWhite, int value): Piece{owner, pos, type, isWhite, value} {}; // type should be 'N' or 'n'
     virtual void generateAttacks();
     virtual void getMoves(std::vector<Move>& moves);
+
+    // Also call this plz
+    static void initializeKnightData();
 };
 
 #endif

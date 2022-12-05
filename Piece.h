@@ -18,6 +18,10 @@ private:
     bool isCaptured;
     std::vector<int> pinSquares;
 protected:
+
+        // This holds the limit square in each direction from every square.
+    static int moveData[64][8];
+
     Piece* pieceAt(int location);
     // the directions, 0-3 are Rook directions, 4-7 are Bishop directions. Pawn moves are [0] (move up), [4] and [5] (attack), offset by 2 for black.
     static const int direction(int index) {
@@ -42,8 +46,6 @@ protected:
     // check if pos is a Pin square
     bool isPin(int square);
 
-    // add pin square
-    void addPin(int square);
 
     void setAttackingPiece(int square);
 
@@ -55,8 +57,11 @@ protected:
     bool checkEnPassant(Move move);
 
 
+
 public:
-    Piece(Board* owner, int pos, char type, bool isWhite, int value): owner{owner}, pos{pos}, type{type}, isWhite{isWhite}, value{value} {};
+
+    virtual ~Piece() {};
+    Piece(Board* owner, int pos, char type, bool isWhite, int value): owner{owner}, pos{pos}, type{type}, isWhite{isWhite}, value{value}, isCaptured{false} {};
 
     // Virtual Constructor, call this on board to return a unique pointer
     static std::unique_ptr<King> CreateUniqueKing(Board* owner, int pos, char type);
@@ -80,6 +85,15 @@ public:
 
     void clearPins();
 
+    // add pin square
+    void addPin(int square);
+
+    // Call this before anything!!
+    static void initializeData();
+
+
+
 };
+
 
 #endif
