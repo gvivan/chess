@@ -45,6 +45,10 @@ void Pawn::generateAttacks(){
 
 void Pawn::getMoves(vector<Move>& moves){
 
+    if(this->getIsCaptured()){
+        return;
+    }
+
     Move move;
     move.start = getPos();
     move.captured = nullptr;
@@ -76,7 +80,23 @@ void Pawn::getMoves(vector<Move>& moves){
                     move.end = target;
                     move.type = capture;
                     move.captured = pieceAt(target);
-                    moves.push_back(move);
+                    if(target > 55 || target < 8){
+                        move.type = promotion;
+                        if(this->getTeam()){
+                            for(char p : {'Q', 'R', 'B', 'N'}){
+                                move.promotionPiece = p;
+                                moves.push_back(move);
+                            }
+                        }else{
+                            for(char p : {'q', 'r', 'b', 'n'}){
+                                move.promotionPiece = p;
+                                cout << p << endl;
+                                moves.push_back(move);
+                            }
+                        }  
+                    }else{
+                        moves.push_back(move);
+                    }  
                 }
             }else if(target == getEnPassant()){
                 move.end = target;

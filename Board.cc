@@ -58,13 +58,11 @@ void Board::generateMoves(std::vector<Move> &moves){
     if(whiteTurn){
         if(checkCount < 2){
             for(int i = 0; i < numW; i++){
-                cout << "generating for: " << WPieces[i]->getPiece() << endl;
                 WPieces[i]->getMoves(moves);
                 
             }
         }
         WKing->getMoves(moves);
-        cout << "generating for: " << WKing->getPiece() << endl;
     }else{
         if(checkCount < 2){
             for(int i = 0; i < numB; i++){
@@ -115,8 +113,6 @@ void Board::makeMove(const Move move){
         }
     }else if(move.type == Kcastling){
         castlingCount++;
-        cout << board[move.end]->getPiece();
-        cout << board[move.start + 2]->getPiece();
         board[move.start + 1] = board[move.start + 3];
         board[move.start + 3] = nullptr;
     }else if(move.type == Qcastling){
@@ -124,8 +120,8 @@ void Board::makeMove(const Move move){
         board[move.start - 1] = board[move.start - 4];
         board[move.start - 4] = nullptr;
     }else if(move.type == enPassant){
-        captureCount++;
         EPcount++;
+        captureCount++;
         move.captured->setCapture(true);
         board[move.captured->getPos()] = nullptr;
     }else if(move.type == promotion){
@@ -147,6 +143,10 @@ void Board::makeMove(const Move move){
                     break;
                 }
             }
+        }
+        if(move.captured != nullptr){
+            captureCount++;
+            move.captured->setCapture(true);
         }
     }
     movesPlayed.push_back(move);
@@ -218,6 +218,7 @@ void Board::unmakeMove(){
         board[move.start - 1] = nullptr;
         board[move.end] = nullptr;
     }else if(move.type == enPassant){
+        board[move.end] = nullptr;
         board[move.captured->getPos()] = move.captured;
         move.captured->setCapture(false);
     }else if(move.type == promotion){
@@ -239,6 +240,10 @@ void Board::unmakeMove(){
                     break;
                 }
             }
+        }
+        if(move.captured != nullptr){
+            board[move.end] = move.captured;
+            move.captured->setCapture(false);
         }
     }
     
@@ -265,14 +270,10 @@ void Board::importFEN(std::string FEN){
     char input;
     for(int i = 7; i >= 0; --i){
         for(int j = 0; j < 8; j++){
-            cout << "x: " << i << endl;
-            cout << "y: " << j << endl;
-            cout << "Square: " << i * 8 + j <<  endl;
             s >> input;
             if(input == '/'){
                 s >> input;
             }
-            cout << "Input: " << input << endl;
             if(isdigit(input)){
                 int k = j + todigit(input);
                 while(j < k - 1){
@@ -337,11 +338,19 @@ int Board::perft(int depth){
     int numPos = 0;
     generateMoves(moves);
     for(auto move : moves){
-        makeMove(move);
-        if(move.type == capture){
+        
+        if(true){
+            for(auto p : movesPlayed){
+                p.print();
+            }
             move.print();
-            print();
+            cout << endl << endl;
         }
+        
+        makeMove(move);
+        
+        
+        
         numPos += perft(depth - 1);
         unmakeMove();
     }

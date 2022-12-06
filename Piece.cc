@@ -181,15 +181,19 @@ bool Piece::isPin(int square){
 bool Piece::checkEnPassant(Move move){
     bool out;
 
-    owner->makeMove(move);
+    owner->board[move.end] = owner->board[move.start];
+    owner->board[move.start] = nullptr;
+    owner->board[move.captured->getPos()] = nullptr;
     if(owner->whiteTurn){
-        out = !(owner->WKing->inCheck());
+        out = owner->WKing->inCheck();
     }else{
-        out = !(owner->BKing->inCheck());
+        out = owner->BKing->inCheck();
     }
-    owner->unmakeMove();
+    owner->board[move.captured->getPos()] = move.captured;
+    owner->board[move.start] = owner->board[move.end];
+    owner->board[move.end] = nullptr;
     
-    return out;
+    return !out;
 }
 
 

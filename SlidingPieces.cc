@@ -55,26 +55,18 @@ void SlidingPieces::generateAttacks(){
                     Here, we check for pins by 
                     */
                     
-
+                    
                     for(int king = target + direction(i); king != moveData[getPos()][i]; king += direction(i)){
-
                         if(pieceAt(king) != nullptr){
                             if(pieceAt(king)->getPiece() == enemyKing){
                                 /*
                                 Here, we add the squares on the ray to the pin vector of the target piece, restricting its movement
                                 */
-                                cout << "bound: " << getPos() - direction(i) << endl;
-                                cout << "increment: " << -direction(i) << endl;
                                 for(int back = king - direction(i); back != getPos() - direction(i); back -= direction(i)){
                                     pieceAt(target)->addPin(back);
-                                    cout << "pin squares: " << back << endl;
                                     
                                 }
                             }
-                        }else{
-                            /*
-                            If we see another piece, then end the loop since there is no pin.
-                            */
                             break;
                         }
                     }

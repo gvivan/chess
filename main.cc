@@ -22,15 +22,16 @@ int main(){
 
     Board board;
 
-    board.importFEN("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ");
+    board.importFEN("n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b");
+
 
     // std::cout << "in check? " << board.isCheck() << std::endl;
 
-    board.perftBranches(1);
+    // board.perftBranches(2);
 
-    // int perftnum = board.perft(1);
+    int perftnum = board.perft(2);
 
-    // cout << "Actual Total:  " << perftnum << endl;
+    cout << "Actual Total:  " << perftnum << endl;
 
     cout << "Captures: " << captureCount << endl;
 

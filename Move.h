@@ -16,8 +16,11 @@ public:
     Piece* captured;
     moveType type;
     char promotionPiece;
-    void print(){
+    void print() const {
         std::cout << start << '-' << end << std::endl;
+        if(type == promotion){
+            std::cout << "promoted to: " << promotionPiece << std::endl;
+        }
     }
 };
 
