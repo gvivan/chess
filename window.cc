@@ -77,6 +77,16 @@ void Xwindow::fillRectangle(int x, int y, int width, int height, int colour) {
   XSetForeground(d, gc, colours[Black]);
 }
 
+void Xwindow::fillArc(int x, int y, int width, int height, int angle1, int angle2, int colour) {
+	XSetForeground(d, gc, colours[colour]);
+	XFillArc(d, w, gc, x-width/2, y-height/2, width, height, angle1 * 64, angle2 * 64);
+	XSetForeground(d, gc, colours[Black]);
+}
+
+void Xwindow::fillCircle(int x, int y, int di, int colour) {
+	    fillArc(x, y, di, di, 0, 360, colour);
+}
+
 void Xwindow::drawStringFont(int x, int y, string msg, string font, int colour) {
   XFontStruct *f = XLoadQueryFont(d, font.c_str());
   if(f == nullptr) {

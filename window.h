@@ -32,6 +32,9 @@ class Xwindow {
 
   void drawStringFont(int x, int y, std::string msg, std::string font, int colour = Black);
 
+  void fillArc(int x, int y, int width, int height, int angle1, int angle2, int colour);
+  void fillCircle(int x, int y, int d, int colour = Black);
+
 };
 
 #endif
