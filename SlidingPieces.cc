@@ -98,6 +98,8 @@ void SlidingPieces::getMoves(std::vector<Move>& moves){
     move.start = getPos();
     move.promotionPiece = '*';
     bool check = (getCheckCount() == 1);
+    cout << "Rook pos: " << move.start << endl;
+    cout << pieceAt(move.start)->getPiece() << endl;
 
 
 

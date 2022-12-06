@@ -1,4 +1,3 @@
-
 #include <iostream>
 
 #include "Board.h"
@@ -22,14 +21,14 @@ int main(){
 
     Board board;
 
-    board.importFEN("n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b");
+    board.importFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq");
 
 
     // std::cout << "in check? " << board.isCheck() << std::endl;
 
     // board.perftBranches(2);
 
-    int perftnum = board.perft(2);
+    int perftnum = board.perft(4);
 
     cout << "Actual Total:  " << perftnum << endl;
 

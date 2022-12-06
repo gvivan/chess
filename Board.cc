@@ -75,8 +75,6 @@ void Board::generateMoves(std::vector<Move> &moves){
 
 void Board::makeMove(const Move move){
     enPassantSquare = -1;
-
-
     // editing castle rights
     if(whiteTurn){
         if(move.start == 4){
@@ -96,10 +94,14 @@ void Board::makeMove(const Move move){
         }
     }
     
+    print();
+    move.print();
 
     board[move.end] = board[move.start];
     board[move.start] = nullptr;
+    cout << "set Pos (line 102)" << endl;
     board[move.end]->setPos(move.end);
+    cout << "Pos setted (line 102)" << endl;
     if(move.type == regular){
         // do nothing
     }else if(move.type == capture){
@@ -114,10 +116,12 @@ void Board::makeMove(const Move move){
     }else if(move.type == Kcastling){
         castlingCount++;
         board[move.start + 1] = board[move.start + 3];
+        board[move.start + 1]->setPos(move.start + 1);
         board[move.start + 3] = nullptr;
     }else if(move.type == Qcastling){
         castlingCount++;
         board[move.start - 1] = board[move.start - 4];
+        board[move.start - 1]->setPos(move.start - 1);
         board[move.start - 4] = nullptr;
     }else if(move.type == enPassant){
         EPcount++;
@@ -203,7 +207,9 @@ void Board::unmakeMove(){
     }
     
     board[move.start] = board[move.end];
+    cout << "set Pos (line 208)" << endl;
     board[move.start]->setPos(move.start);
+    cout << "Pos Setted (line 208)" << endl;
     if(move.type == regular || move.type == pawnDouble){
         board[move.end] = nullptr;
     }else if(move.type == capture){
@@ -211,10 +217,12 @@ void Board::unmakeMove(){
         move.captured->setCapture(false);
     }else if(move.type == Kcastling){
         board[move.start + 3] = board[move.start + 1];
+        board[move.start + 3]->setPos(move.start + 3);
         board[move.start + 1] = nullptr;
         board[move.end] = nullptr;
     }else if(move.type == Qcastling){
         board[move.start - 4] = board[move.start - 1];
+        board[move.start - 4]->setPos(move.start - 4);
         board[move.start - 1] = nullptr;
         board[move.end] = nullptr;
     }else if(move.type == enPassant){
@@ -346,6 +354,7 @@ int Board::perft(int depth){
             move.print();
             cout << endl << endl;
         }
+
         
         makeMove(move);
         

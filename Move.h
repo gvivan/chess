@@ -22,6 +22,11 @@ public:
             std::cout << "promoted to: " << promotionPiece << std::endl;
         }
     }
+
+    bool operator==(Move move){
+        return this->start == move.start && this->end == move.end;
+    }
+
 };
 
 #endif

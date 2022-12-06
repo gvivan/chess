@@ -27,6 +27,7 @@ void King::getMoves(vector<Move>& moves){
     }
     */
     Move move;
+    cout << "King pos: " << getPos() << endl;
     move.start = getPos();
     move.promotionPiece = '*';
     move.captured = nullptr;
