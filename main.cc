@@ -11,17 +11,33 @@
 #include "Rook.h"
 #include "SlidingPieces.h"
 
+extern int captureCount;
+extern int EPcount;
+extern int castlingCount;
+
+using namespace std;
+
 int main(){
 
-    int perftNum = 0;
 
     Board board;
 
-    board.importFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R");
+    board.importFEN("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ");
 
-    perftNum = board.perft(1);
+    // std::cout << "in check? " << board.isCheck() << std::endl;
 
-    std::cout << "Nodes: " << perftNum << std::endl;
+    board.perftBranches(1);
+
+    // int perftnum = board.perft(1);
+
+    // cout << "Actual Total:  " << perftnum << endl;
+
+    cout << "Captures: " << captureCount << endl;
+
+    cout << "castlingCount: " << castlingCount << endl;
+
+    cout << "EPs: " << EPcount << endl;
+
 
     return 0;
 }

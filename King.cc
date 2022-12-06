@@ -19,16 +19,31 @@ void King::generateAttacks(){
 
 void King::getMoves(vector<Move>& moves){
 
+    /*
+    if(this->getTeam()){
+        cout << "getting white King moves..." << endl;
+    }else{
+        cout << "getting black King moves..." << endl;
+    }
+    */
     Move move;
     move.start = getPos();
     move.promotionPiece = '*';
     move.captured = nullptr;
 
-    cout << "checking castle..." << endl;
     if(castleRights(this->getTeam(), true)){ // checking kingside castle
-        cout << "hello?" << endl;
+        /*
+        cout << "checking castle for: " << this->getTeam() << endl;
+        cout << "attack status: ";
+        cout << static_cast<int>(getAttack(move.start)) << static_cast<int>(getAttack(move.start + 1)) << static_cast<int>(getAttack(move.start + 2)) << endl;
+
+        cout << "space status: " << (pieceAt(move.start + 1) == nullptr) << (pieceAt(move.start + 2) == nullptr) << endl;
+        */
+
         if(getAttack(move.start) == noAttack && getAttack(move.start + 1) == noAttack && getAttack(move.start + 2) == noAttack
         && pieceAt(move.start + 1) == nullptr && pieceAt(move.start + 2) == nullptr){
+            cout << "castling..." << endl;
+            cout << move.start << endl;
             move.end = getPos() + 2;
             move.type = Kcastling;
             moves.push_back(move);
@@ -45,7 +60,6 @@ void King::getMoves(vector<Move>& moves){
     }
     
     int target;
-    Piece* PieceCapture;
 
     for(int i = 0; i < 8; i++){
 
@@ -53,12 +67,11 @@ void King::getMoves(vector<Move>& moves){
 
         if(target != moveData[getPos()][i] && getAttack(target) == noAttack){
             move.end = target;
-            PieceCapture = pieceAt(target);
 
-            if(PieceCapture != nullptr){
+            if(pieceAt(target) != nullptr){
 
-                if(PieceCapture->getTeam() != this->getTeam()){
-                    move.captured = PieceCapture;
+                if(pieceAt(target)->getTeam() != this->getTeam()){
+                    move.captured = pieceAt(target);
                     move.type = capture;
                     // here, we could give a value to moves depending on what was captured (to do later)
                     moves.push_back(move);

@@ -66,11 +66,6 @@ void Knight::getMoves(vector<Move>& moves){
 
     if(this->getIsCaptured()){
         return;
-    }else if(getCheckCount() > 1){
-        return;
-        /*
-        Note that if a Knight is pinned, it cannot move.
-        */
     }else if(this->isPinned()){
         return;
     }

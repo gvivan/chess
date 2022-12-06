@@ -57,10 +57,15 @@ void Pawn::getMoves(vector<Move>& moves){
         offset = 2;
     }
 
+    bool check = (getCheckCount() == 1);
+
     // Generate attacking moves
     for(int i = 4; i <= 5; i++){
         target = getPos()+ direction(i + offset);
         if(target != moveData[getPos()][i + offset]){
+            if(check && getAttack(target) != kingAttack){
+                continue;
+            }
             if(isPinned() && !(isPin(target))){
                 continue;
             }
@@ -76,7 +81,7 @@ void Pawn::getMoves(vector<Move>& moves){
             }else if(target == getEnPassant()){
                 move.end = target;
                 move.type = enPassant;
-                move.captured = pieceAt(getPos() + direction(2 - offset));
+                move.captured = pieceAt(target + direction(2 - offset));
                 if(checkEnPassant(move)){
                     moves.push_back(move);
                 }
@@ -90,33 +95,37 @@ void Pawn::getMoves(vector<Move>& moves){
     target = getPos() + direction(offset);
     if(target != moveData[getPos()][offset]){
         if( !((isPinned() && !(isPin(target))) || pieceAt(target) != nullptr) ){
-            move.end = target;
-            if(target > 55 || target < 8){
-                move.type = promotion;
-                if(this->getTeam()){
-                    for(char p : {'Q', 'R', 'B', 'N'}){
-                        move.promotionPiece = p;
-                        moves.push_back(move);
+            if(!check || getAttack(target) == kingAttack){
+                move.end = target;
+                if(target > 55 || target < 8){
+                    move.type = promotion;
+                    if(this->getTeam()){
+                        for(char p : {'Q', 'R', 'B', 'N'}){
+                            move.promotionPiece = p;
+                            moves.push_back(move);
+                        }
+                    }else{
+                        for(char p : {'q', 'r', 'b', 'n'}){
+                            move.promotionPiece = p;
+                            moves.push_back(move);
+                        }
                     }
+                        
                 }else{
-                    for(char p : {'q', 'r', 'b', 'n'}){
-                        move.promotionPiece = p;
-                        moves.push_back(move);
-                    }
+                    move.type = regular;
+                    moves.push_back(move);
                 }
-                    
-            }else{
-                move.type = regular;
-                moves.push_back(move);
             }
             
             // Generate double up move
             target += direction(offset);
-            if((getTeam() && move.start < 16) || (!getTeam() && move.start > 40)){
-                if(pieceAt(target) == nullptr){
-                    move.end = target;
-                    move.type = pawnDouble;
-                    moves.push_back(move);
+            if(!check || getAttack(target) == kingAttack){
+                if((getTeam() && move.start < 16) || (!getTeam() && move.start > 40)){
+                    if(pieceAt(target) == nullptr){
+                        move.end = target;
+                        move.type = pawnDouble;
+                        moves.push_back(move);
+                    }
                 }
             }
         }

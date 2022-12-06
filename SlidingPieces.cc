@@ -32,7 +32,6 @@ void SlidingPieces::generateAttacks(){
 
         for(int target = getPos() + direction(i); target != moveData[getPos()][i]; target += direction(i)){
             setAttack(target);
-
             // if there is a piece at the square
             if(pieceAt(target) != nullptr){
                 if(pieceAt(target)->getTeam() == this->getTeam()){
@@ -64,8 +63,12 @@ void SlidingPieces::generateAttacks(){
                                 /*
                                 Here, we add the squares on the ray to the pin vector of the target piece, restricting its movement
                                 */
+                                cout << "bound: " << getPos() - direction(i) << endl;
+                                cout << "increment: " << -direction(i) << endl;
                                 for(int back = king - direction(i); back != getPos() - direction(i); back -= direction(i)){
                                     pieceAt(target)->addPin(back);
+                                    cout << "pin squares: " << back << endl;
+                                    
                                 }
                             }
                         }else{
@@ -75,6 +78,7 @@ void SlidingPieces::generateAttacks(){
                             break;
                         }
                     }
+                    break;
                 }
                 /*
                 If the king is not found on the ray, then no pin is generated. 
@@ -95,8 +99,6 @@ void SlidingPieces::getMoves(std::vector<Move>& moves){
 
     // do nothing if the piece is captured
     if(getIsCaptured()){
-        return;
-    }else if(getCheckCount() > 1){
         return;
     }
     
@@ -121,11 +123,13 @@ void SlidingPieces::getMoves(std::vector<Move>& moves){
             the pin is always in a ray.
             */
             if(this->isPinned()){
-            if(!isPin(target + direction(i))){
-                break;
+                if(!isPin(target)){
+                    break;
+                }
             }
-        }
+            
             move.end = target;
+
             if(check){
                 // If check, only consider moves that block it or capture attacking piece
                 if(getAttack(target) != kingAttack && target != getAttackingPiece()){
@@ -141,6 +145,7 @@ void SlidingPieces::getMoves(std::vector<Move>& moves){
                     move.type = capture;
                     move.captured = pieceAt(target);
                     moves.push_back(move);
+                    break;
                 }
             }else{
                 move.captured = nullptr;

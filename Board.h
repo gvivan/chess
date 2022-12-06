@@ -68,6 +68,7 @@ private:
     
 public:
     Board();
+    bool isCheck();
     // The move given to makeMove should be legal, except for enPassant checking.
     void makeMove(Move move);
     void unmakeMove();
@@ -76,6 +77,11 @@ public:
     int perft(int depth);
     void print();
     int moveNum();
+    void perftBranches(int depth);
+    void printAttacks();
+
+    // for debugging purposes only!!
+    Piece* pieceAt(int num);
 
 };
 
