@@ -42,7 +42,14 @@ void graphicsDisplay::printBoard(const string fen) {
 
                 if(piece >= '1' && piece <= '8') {
                         int num = piece - '0';
-                        col += num;
+                        for (int j = 0; j < num; j++) {
+                                if((row+col)%2 == 0) {
+                                        window.fillRectangle((50*col)+50,(50*row)+10,50,50,0);
+                                } else {
+                                        window.fillRectangle((50*col)+50,(50*row)+10,50,50,1);
+                                }
+                                col++;
+                        }
                 } else if (piece == '/') {
                         row++;
                         col = 0;
