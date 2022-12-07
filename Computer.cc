@@ -53,6 +53,8 @@ Move Computer::getMove(){
             
             board->unmakeMove();
         }
+        sort(moves.begin(), moves.end());
+        return moves.back();
     }else{
         return endGame();
     }
