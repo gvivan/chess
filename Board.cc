@@ -156,7 +156,6 @@ void Board::makeMove(const Move move){
     
     whiteTurn = !whiteTurn;
     updateAttacks();
-    print();
 }
 
 void Board::unmakeMove(){
@@ -394,6 +393,7 @@ void Board::perftBranches(int depth){
 void Board::print() {
     cout << endl;
     for(int i = 7; i >= 0; i--){
+        cout << i + 1 << " ";
         for(int j = 0; j < 8; j++){
             if(board[i * 8 + j] == nullptr){
                 cout << '-';
@@ -403,7 +403,21 @@ void Board::print() {
         }
         cout << endl;
     }
+    char out;
+    cout << "  " << endl;
+    for(int j = 0; j < 8; j++){
+        out = j + 'a' - 1;
+        cout << out;
+    }
     cout << endl;
+
+    if(isCheck()){
+        if(whiteTurn){
+            cout << "White is in check" << endl;
+        }else{
+            cout << "Black is in check" << endl;
+        }
+    }
 }
 
 void Board::printAttacks() {
@@ -606,5 +620,7 @@ void Board::setup(){
     }while(true);
 }
 
-
+attackType Board::getAttack(int in){
+    return attacks[in];
+}
 

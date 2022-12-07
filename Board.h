@@ -73,6 +73,7 @@ public:
     int moveNum();
     void perftBranches(int depth);
     void printAttacks();
+    attackType getAttack(int in);
 
     // for debugging purposes only!!
     Piece* pieceAt(int num);

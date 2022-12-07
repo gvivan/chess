@@ -65,6 +65,7 @@ void Game::requestMove(){
     }
     if(checkMove(move)){
         makeMove(move);
+        theBoard->print();
     }else{
         cout << "Please enter a valid move" << endl;
     }
@@ -113,7 +114,7 @@ void Game::endGame(){
             }else{
                 endGame(whiteWins);
             }
-    
+
 }
 
 void Game::endGame(winner state){
