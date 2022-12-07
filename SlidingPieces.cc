@@ -98,8 +98,6 @@ void SlidingPieces::getMoves(std::vector<Move>& moves){
     move.start = getPos();
     move.promotionPiece = '*';
     bool check = (getCheckCount() == 1);
-    cout << "Rook pos: " << move.start << endl;
-    cout << pieceAt(move.start)->getPiece() << endl;
 
 
 
@@ -110,6 +108,8 @@ void SlidingPieces::getMoves(std::vector<Move>& moves){
         if(getPos() == moveData[getPos()][i] - direction(i)){
             continue;
         }
+
+        // cout << "Generating for: " << pieceAt(getPos())->getPiece() << endl;
 
         for(int target = getPos() + direction(i); target != moveData[getPos()][i]; target += direction(i)){
             /*
@@ -127,7 +127,12 @@ void SlidingPieces::getMoves(std::vector<Move>& moves){
             if(check){
                 // If check, only consider moves that block it or capture attacking piece
                 if(getAttack(target) != kingAttack && target != getAttackingPiece()){
-                    continue;
+                    if(pieceAt(target) != nullptr){
+                        break;
+                    }else{
+                        continue;
+                    }
+                    
                 }
             }
             if(pieceAt(target) != nullptr){

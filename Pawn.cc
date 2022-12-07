@@ -140,7 +140,7 @@ void Pawn::getMoves(vector<Move>& moves){
             // Generate double up move
             target += direction(offset);
             if(!check || getAttack(target) == kingAttack){
-                if((getTeam() && move.start < 16) || (!getTeam() && move.start > 40)){
+                if((getTeam() && move.start < 16) || (!getTeam() && move.start > 47)){
                     if(pieceAt(target) == nullptr){
                         move.end = target;
                         move.type = pawnDouble;

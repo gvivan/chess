@@ -3,6 +3,7 @@
 #include <cctype>
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 #include "Piece.h"
 #include "Knight.h"
@@ -57,6 +58,7 @@ void Board::updateAttacks(){
 void Board::generateMoves(std::vector<Move> &moves){
     if(whiteTurn){
         if(checkCount < 2){
+            
             for(int i = 0; i < numW; i++){
                 WPieces[i]->getMoves(moves);
                 
@@ -76,7 +78,7 @@ void Board::generateMoves(std::vector<Move> &moves){
 void Board::makeMove(const Move move){
     enPassantSquare = -1;
     // editing castle rights
-    if(whiteTurn){
+    
         if(move.start == 4){
             WQcastle = false;
             WKcastle = false;
@@ -92,16 +94,13 @@ void Board::makeMove(const Move move){
         }else if(move.start == 63 || move.end == 63){
             BKcastle = false;
         }
-    }
     
-    print();
-    move.print();
 
     board[move.end] = board[move.start];
     board[move.start] = nullptr;
-    cout << "set Pos (line 102)" << endl;
+    // cout << "set Pos (line 102)" << endl;
     board[move.end]->setPos(move.end);
-    cout << "Pos setted (line 102)" << endl;
+    // cout << "Pos setted (line 102)" << endl;
     if(move.type == regular){
         // do nothing
     }else if(move.type == capture){
@@ -157,7 +156,7 @@ void Board::makeMove(const Move move){
     
     whiteTurn = !whiteTurn;
     updateAttacks();
-    // print();
+    print();
 }
 
 void Board::unmakeMove(){
@@ -169,6 +168,14 @@ void Board::unmakeMove(){
     if(!whiteTurn){
         for(int i : {0, 4, 7}){
             if(move.start == i){
+                if(i == 0){
+                    WQcastle = true;
+                }else if(i == 4){
+                    WQcastle = true;
+                    WKcastle = true;
+                }else{
+                    WKcastle = true;
+                }
                 for(auto p : movesPlayed){
                     if(p.start == i){
                         if(i == 0){
@@ -188,15 +195,25 @@ void Board::unmakeMove(){
     }else{
         for(int i : {56, 60, 63}){
             if(move.start == i){
+
+                if(i == 56){
+                    BQcastle = true;
+                }else if(i == 60){
+                    BQcastle = true;
+                    BKcastle = true;
+                }else{
+                    BKcastle = true;
+                }
+
                 for(auto p : movesPlayed){
                     if(p.start == i || p.end == i){
                         if(i == 56){
-                            WQcastle = false;
+                            BQcastle = false;
                         }else if(i == 60){
-                            WQcastle = false;
-                            WKcastle = false;
+                            BQcastle = false;
+                            BKcastle = false;
                         }else{
-                            WKcastle = false;
+                            BKcastle = false;
                         }
                         
                         break;
@@ -207,9 +224,9 @@ void Board::unmakeMove(){
     }
     
     board[move.start] = board[move.end];
-    cout << "set Pos (line 208)" << endl;
+    // cout << "set Pos (line 208)" << endl;
     board[move.start]->setPos(move.start);
-    cout << "Pos Setted (line 208)" << endl;
+    // cout << "Pos Setted (line 208)" << endl;
     if(move.type == regular || move.type == pawnDouble){
         board[move.end] = nullptr;
     }else if(move.type == capture){
@@ -230,12 +247,14 @@ void Board::unmakeMove(){
         board[move.captured->getPos()] = move.captured;
         move.captured->setCapture(false);
     }else if(move.type == promotion){
+        board[move.end] = move.captured;
         if(whiteTurn){
             for(int i = 0; i < numW; i++){
                 if(board[move.start] == WPieces[i].get()){
                     WPieces[i].reset();
                     WPieces[i] = Piece::CreateUniquePiece(this, move.start, 'P');
                     board[move.start] = WPieces[i].get();
+                    
                     break;
                 }
             }
@@ -347,19 +366,8 @@ int Board::perft(int depth){
     generateMoves(moves);
     for(auto move : moves){
         
-        if(true){
-            for(auto p : movesPlayed){
-                p.print();
-            }
-            move.print();
-            cout << endl << endl;
-        }
-
-        
         makeMove(move);
-        
-        
-        
+
         numPos += perft(depth - 1);
         unmakeMove();
     }
@@ -416,5 +424,187 @@ int Board::moveNum(){
 Piece* Board::pieceAt(int num){
     return board[num];
 }
+
+string Board::exportFEN(){
+    int skip = 0;
+    string out = "";
+    for(int i = 7; i >= 0; i--){
+        for(int j = 0; j < 8; j++){
+            if(board[i * 8 + j] == nullptr){
+                skip++;
+            }else{
+                if(skip > 0){
+                    out = out + to_string(skip);
+                    skip = 0;
+                }
+                out = out + board[i * 8 + j]->getPiece();
+            }
+        }
+        if(skip > 0){
+            out = out + to_string(skip);
+            skip = 0;
+        }
+        out = out + '/';
+    }
+    if(whiteTurn){
+        out = out + " w ";
+    }else{
+        out = out + " b ";
+    }
+
+    if(WKcastle){
+        out = out + 'K';
+    }
+    if(WQcastle){
+        out = out + 'Q';
+    }
+    if(BKcastle){
+        out = out + 'k';
+    }
+    if(BQcastle){
+        out = out + 'q';
+    }
+
+    return out;
+}
+
+bool Board::getTurn(){
+    return whiteTurn;
+}
+
+bool Board::checkBoard(){
+    bool out;
+    if(WKing.get() == nullptr || BKing.get()){
+        return false;
+    }
+    updateAttacks();
+    out = !isCheck();
+    whiteTurn = !whiteTurn;
+    updateAttacks();
+    out = out && !isCheck();
+    return out;
+}
+
+
+
+void Board::setup(){
+    if(initialized){
+        cout << "Board already initialized, sorry!" << endl;
+        return;
+    }
+    string input;
+    string word;
+    char piece;
+    bool valid = true;
+    int pos;
+    
+    do{
+        getline(cin, input);
+        if(input == "done"){
+            for(int i = 0; i < 8; i++){
+                if(board[i] != nullptr && (board[i]->getPiece() == 'p' || board[i]->getPiece() == 'P')){
+                    valid = false;
+                    cout << "No pawns on first or last row!" << endl;
+                    break;
+                }
+            }
+            for(int i = 56; i < 64; i++){
+                if(board[i] != nullptr && (board[i]->getPiece() == 'p' || board[i]->getPiece() == 'P')){
+                    valid = false;
+                    cout << "No pawns on first or last row!" << endl;
+                    break;
+                }
+            }
+            if(valid){
+                valid = checkBoard();
+            }
+            if(valid){
+                cout << "setup complete!" << endl;
+                initialized = true;
+                whiteTurn = true;
+                attackingPiece = -1;
+                enPassantSquare = -1;
+
+                break;
+            }else{
+                cout << "Please enter valid board" << endl;
+            }
+
+        }
+        stringstream s{input};
+        if(s >> word){
+            if(word == "+"){
+                s >> piece;
+                s >> word;
+                pos = coordinateToInt(word);
+                if(board[pos] != nullptr){
+                    cout << "There is already a piece here!" << endl;
+                }else{
+
+                    if(isupper(piece)){
+                if(piece == 'K'){
+                    WKing = Piece::CreateUniqueKing(this, pos, piece);
+                    board[pos] = WKing.get();
+                }else{
+                    WPieces[numW] = Piece::CreateUniquePiece(this, pos, piece);
+                    board[pos] = WPieces[numW].get();
+                    numW++;
+                }
+                }else{
+                if(piece == 'k'){
+                    BKing = Piece::CreateUniqueKing(this, pos, piece);
+                    board[pos] = BKing.get();
+                }else{
+                    BPieces[numB] = Piece::CreateUniquePiece(this, pos, piece);
+                    board[pos] = BPieces[numB].get();
+                    numB++;
+                }
+                }
+                }
+
+            }else if(word == "-"){
+                s >> word;
+                pos = coordinateToInt(word);
+                if(board[pos]->getTeam()){
+                    if(board[pos]->getPiece() == 'K'){
+                        WKing.reset();
+                    }else{
+                        for(int i = 0; i < numW; i++){
+                            if(board[pos] == WPieces[i].get()){
+                                WPieces[i].reset();
+                                swap(WPieces[i], WPieces[numW - 1]);
+                                break;
+                            }
+                        }
+                    }
+                }else{
+                    if(board[pos]->getPiece() == 'k'){
+                        BKing.reset();
+                    }else{
+                        for(int i = 0; i < numB; i++){
+                            if(board[pos] == BPieces[i].get()){
+                                BPieces[i].reset();
+                                swap(BPieces[i], BPieces[numW - 1]);
+                                break;
+                            }
+                        }
+                    }
+                }
+                board[pos] = nullptr;
+
+            }else if(word == "="){
+                s >> word;
+                if(word == "white" || word == "White" ){
+                    whiteTurn = true;
+                }else{
+                    whiteTurn = false;
+                }
+            }
+        }
+        print();
+
+    }while(true);
+}
+
 
 

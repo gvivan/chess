@@ -27,7 +27,6 @@ void King::getMoves(vector<Move>& moves){
     }
     */
     Move move;
-    cout << "King pos: " << getPos() << endl;
     move.start = getPos();
     move.promotionPiece = '*';
     move.captured = nullptr;
@@ -43,7 +42,6 @@ void King::getMoves(vector<Move>& moves){
 
         if(getAttack(move.start) == noAttack && getAttack(move.start + 1) == noAttack && getAttack(move.start + 2) == noAttack
         && pieceAt(move.start + 1) == nullptr && pieceAt(move.start + 2) == nullptr){
-            cout << "castling..." << endl;
             cout << move.start << endl;
             move.end = getPos() + 2;
             move.type = Kcastling;

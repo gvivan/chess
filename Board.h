@@ -31,12 +31,6 @@ private:
     We keep track of the moves played in a vector to allow for undos
     */
     std::vector<Move> movesPlayed;
-
-    /*
-    We save the moves generated for this turn (this is only beneficial for human moves)
-    */
-    std::vector<Move> movesGenerated;
-
     /*
     To keep track of pieces, we have to arrays of length 63 for each side. This takes advantage
     of the fact that there cannot be more than 16 pieces on each side in a game of chess, making it more efficient than a vector.
@@ -82,6 +76,11 @@ public:
 
     // for debugging purposes only!!
     Piece* pieceAt(int num);
+
+    std::string exportFEN();
+    bool getTurn();
+    bool checkBoard();
+    void setup();
 
 };
 
